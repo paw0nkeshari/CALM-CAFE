@@ -1,0 +1,54 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>Calm Cafe — Booking</title><link rel="stylesheet" href="styles.css"/></head><body>
+<div class="container">
+  <div class="header"><div class="logo"><div class="badge">CC</div><div><h1>Calm Cafe</h1><div class="small">Reserve or place your order</div></div></div><div class="nav"><a href="index.html">Home</a><a href="menu.html">Menu</a><a href="products.html">Products</a><a href="booking.html">Book</a><a href="admin.html">Admin</a></div></div>
+  <div class="grid">
+    <main>
+      <div class="card">
+        <h2>Booking & Order Form</h2>
+        <p class="small">Provide your details and any special requests. Your order will appear in the owner's Admin orders table.</p>
+        <form id="orderForm">
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <div style="flex:1"><label class="small">Full name</label><input name="name" required placeholder="Your full name" style="width:100%;padding:8px;border-radius:8px;border:1px solid #ddd"/></div>
+            <div style="width:220px"><label class="small">Phone (WhatsApp)</label><input name="phone" required placeholder="+91 9XXXXXXXXX" value="+91 9935479764" style="width:100%;padding:8px;border-radius:8px;border:1px solid #ddd"/></div>
+          </div>
+          <div style="margin-top:8px;display:flex;gap:8px">
+            <div style="flex:1"><label class="small">Email</label><input name="email" placeholder="you@example.com" style="width:100%;padding:8px;border-radius:8px;border:1px solid #ddd"/></div>
+            <div style="width:160px"><label class="small">Date</label><input name="date" type="date" style="width:100%;padding:8px;border-radius:8px;border:1px solid #ddd"/></div>
+            <div style="width:140px"><label class="small">Time</label><input name="time" type="time" style="width:100%;padding:8px;border-radius:8px;border:1px solid #ddd"/></div>
+          </div>
+          <div style="margin-top:8px;display:flex;gap:8px">
+            <div style="width:120px"><label class="small">Guests</label><select name="guests" style="width:100%;padding:8px;border-radius:8px;border:1px solid #ddd"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6+</option></select></div>
+            <div style="flex:1"><label class="small">Occasion (optional)</label><input name="occasion" placeholder="Birthday, meeting, etc." style="width:100%;padding:8px;border-radius:8px;border:1px solid #ddd"/></div>
+          </div>
+          <div style="margin-top:8px"><label class="small">Delivery / Pickup Address (optional)</label><input name="address" placeholder="House, street, city..." style="width:100%;padding:8px;border-radius:8px;border:1px solid #ddd"/></div>
+          <div style="margin-top:8px"><label class="small">Notes / Allergies</label><textarea name="notes" rows="3" style="width:100%;padding:8px;border-radius:8px;border:1px solid #ddd"></textarea></div>
+          <div style="margin-top:12px" id="order-cart" class="card small"></div>
+          <div style="margin-top:12px;display:flex;gap:8px">
+            <button class="button" type="button" onclick="placeOrderFromForm('orderForm')">Confirm & Send (WhatsApp + Save)</button>
+            <button class="button ghost" type="button" onclick="saveCart([]);renderCartMini();document.getElementById('order-cart').innerHTML='Cart cleared'">Clear Order</button>
+            <button class="button ghost" type="button" onclick="document.getElementById('orderForm').reset();">Reset Form</button>
+            <button class="button ghost" type="button" onclick="openReceiptWindow({name:document.querySelector('[name=name]').value || 'Guest', phone:document.querySelector('[name=phone]').value || '', items:getCart(), subtotal:getCart().reduce((s,i)=>s+i.price*i.qty,0)})">Print Receipt (A4)</button>
+          </div>
+        </form>
+      </div>
+    </main>
+    <aside>
+      <div class="card" id="mini-cart"></div>
+      <div class="card" style="margin-top:12px"><h4>Tips</h4><p class="small">Add items from Menu or Products pages. Use Clear Order to empty the cart. Owner receives orders via WhatsApp and admin table.</p></div>
+    </aside>
+  </div>
+  <div class="footer">© Calm Cafe</div>
+</div>
+<script src="script.js"></script>
+<script>
+function refreshOrderCart(){
+  const target = document.getElementById('order-cart');
+  const cart = getCart();
+  if(cart.length===0){ target.innerHTML='<div class="small">No items in cart</div>'; return; }
+  let s = '<table class="table"><tr><th>Item</th><th>Qty</th><th>Price</th></tr>'; let sum=0; cart.forEach(function(c){ s+='<tr><td>'+c.name+'</td><td>'+c.qty+'</td><td>₹'+(c.price*c.qty)+'</td></tr>'; sum+=c.price*c.qty; }); s+='<tr><td colspan=2><strong>Subtotal</strong></td><td><strong>₹'+sum+'</strong></td></tr></table>';
+  s += '<div style="margin-top:8px"><button class="button" onclick="location.href=\'products.html\'">Add Products</button> <button class="button ghost" onclick="saveCart([]);refreshOrderCart();renderCartMini();">Clear Cart</button></div>';
+  target.innerHTML = s;
+}
+document.addEventListener('DOMContentLoaded', function(){ refreshOrderCart(); });
+</script>
+</body></html>

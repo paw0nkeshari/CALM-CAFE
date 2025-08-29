@@ -1,0 +1,30 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>Calm Cafe — Admin Orders</title><link rel="stylesheet" href="styles.css"/></head><body>
+<div class="container">
+  <div class="header"><div class="logo"><div class="badge">CC</div><div><h1>Calm Cafe - Admin</h1><div class="small">Orders received (local)</div></div></div><div class="nav"><a href="index.html">Home</a><a href="menu.html">Menu</a><a href="products.html">Products</a><a href="booking.html">Book</a><a href="admin.html">Admin</a></div></div>
+  <div class="card">
+    <h2>Orders Table</h2>
+    <p class="small">This page shows orders saved in browser localStorage. For production you should add a server to persist orders centrally.</p>
+    <div style="margin-top:8px" class="controls"><button class="button" onclick="renderOrdersTable()">Refresh</button><button class="button ghost" onclick="if(confirm('Delete all orders?')){ saveOrders([]); renderOrdersTable(); }">Delete All Orders</button><button class="button ghost" onclick="clearAllData()">Clear All Local Data</button></div>
+    <div id="orders-table" style="margin-top:12px"></div>
+    <div style="margin-top:12px"><button class="button" onclick="exportOrdersCSV()">Export CSV</button></div>
+  </div>
+  <div style="height:12px"></div>
+  <div class="footer">© Calm Cafe</div>
+</div>
+<script src="script.js"></script>
+<script>
+function exportOrdersCSV(){
+  const orders = getOrders();
+  if(orders.length===0){ alert('No orders to export'); return; }
+  const rows = ['name,phone,email,date,time,guests,occasion,address,notes,items,subtotal,created'];
+  orders.forEach(function(o){
+    const items = (o.items||[]).map(function(i){ return i.name+' x '+i.qty; }).join('|');
+    const fields = [o.name,o.phone,o.email||'',(o.date||''),(o.time||''),(o.guests||''),(o.occasion||''),(o.address||''),(o.notes||''),items,o.subtotal,o.created];
+    rows.push(fields.map(function(f){ return '"' + String(f||'').replace(/"/g,'""') + '"'; }).join(','));
+  });
+  const blob = new Blob([rows.join('\n')],{type:'text/csv'});
+  const url = URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='calm_orders_'+(new Date()).toISOString().slice(0,10)+'.csv'; a.click(); URL.revokeObjectURL(url);
+}
+document.addEventListener('DOMContentLoaded', function(){ renderOrdersTable(); });
+</script>
+</body></html>
